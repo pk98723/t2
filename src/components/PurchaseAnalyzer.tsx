@@ -43,10 +43,16 @@ export function PurchaseAnalyzerForm({
 }) {
   const [input, setInput] = useState<AnalysisInput>(initial);
 
-  const update = (k: keyof AnalysisInput, v: number | string) =>
-    setInput(
-      (s) => ({ ...s, [k]: typeof v === "string" && k === "fundingMode" ? v : Number(v) }) as AnalysisInput,
-    );
+  const update = (k: keyof AnalysisInput, v: number | string) => {
+    const numValue = typeof v === "string" && k === "fundingMode" ? v : Number(v);
+    
+    // Validation: ensure numbers are non-negative
+    if (typeof numValue === "number" && numValue < 0) {
+      return; // Ignore negative values
+    }
+    
+    setInput((s) => ({ ...s, [k]: numValue }) as AnalysisInput);
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">

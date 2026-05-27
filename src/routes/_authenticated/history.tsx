@@ -31,6 +31,7 @@ function HistoryPage() {
     const { data, error } = await supabase
       .from("decisions")
       .select("id,item_name,price,funding_mode,verdict,emi_ratio_after,emergency_months_after,created_at")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     if (error) {
       toast.error(error.message);

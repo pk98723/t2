@@ -32,13 +32,34 @@ function AuthLayout() {
             </div>
             <span className="font-display text-lg font-bold tracking-tight">Think Twice</span>
           </Link>
-          <nav className="flex items-center gap-1 sm:gap-2">
+          <nav className="flex items-center gap-1 sm:gap-2 flex-wrap">
             <Link
               to="/app"
               activeProps={{ className: "bg-foreground text-background" }}
               className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
             >
               Analyze
+            </Link>
+            <Link
+              to="/expenses"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Expenses
+            </Link>
+            <Link
+              to="/insights"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Insights
+            </Link>
+            <Link
+              to="/categories"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Categories
             </Link>
             <Link
               to="/history"
