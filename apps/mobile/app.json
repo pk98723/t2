@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "T2 - Think Twice",
+    "slug": "t2-finance",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "t2app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "backgroundColor": "#1a1a2e",
+      "resizeMode": "contain"
+    },
+    "android": {
+      "package": "com.t2.finance",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1a1a2e"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}

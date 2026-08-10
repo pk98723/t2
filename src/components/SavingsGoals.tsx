@@ -239,7 +239,7 @@ export function SavingsGoals() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {goals.map((goal) => {
-            const progress = calculateProgress(goal);
+            const progress = calculateProgress(goal.current_amount, goal.target_amount);
             return (
               <div
                 key={goal.id}
