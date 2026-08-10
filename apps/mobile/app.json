@@ -13,7 +13,7 @@
       "resizeMode": "contain"
     },
     "android": {
-      "package": "com.t2.finance",
+      "package": "com.t2app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
@@ -21,7 +21,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ]
   }
 }

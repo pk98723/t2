@@ -1,12 +1,29 @@
-import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
+import { Tabs, Redirect } from "expo-router";
+import { useAuth } from "@/hooks/use-auth";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 
 export default function TabLayout() {
+  const { session, loading } = useAuth();
+
+  // Auth guard — redirect to login if not authenticated
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#FFD700" />
+      </View>
+    );
+  }
+
+  if (!session) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#FFD700",
         tabBarInactiveTintColor: "#888",
+        tabBarStyle: { backgroundColor: "#1a1a2e", borderTopColor: "#2a2a4a" },
         headerStyle: { backgroundColor: "#1a1a2e" },
         headerTintColor: "#fff",
       }}
@@ -42,3 +59,12 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    backgroundColor: "#0f0f1a",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
