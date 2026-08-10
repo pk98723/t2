@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@t2/shared": "*",
+    "@t2/shared": "file:../../packages/shared",
     "@supabase/supabase-js": "^2.106.1",
     "@tanstack/react-query": "^5.83.0",
     "date-fns": "^4.1.0",
