@@ -5,6 +5,8 @@ import { fetchProfile } from "@/lib/profile";
 import { analyzeMonthlyExpenses, getCurrentMonthYear } from "@/lib/expense";
 import { ExpenseInsights } from "@/components/ExpenseInsights";
 import { type MonthlyExpenseAnalysis } from "@/lib/expense";
+import { exportAnalysisReport } from "@/lib/export";
+import { Download } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/insights")({
@@ -57,7 +59,7 @@ function InsightsPage() {
       </div>
 
       {/* Month selector */}
-      <div className="mb-8 flex gap-4 items-center">
+      <div className="mb-8 flex gap-4 items-center flex-wrap">
         <button
           onClick={() => {
             const prev = new Date(selectedMonth.year, selectedMonth.month - 2);
@@ -77,6 +79,14 @@ function InsightsPage() {
         >
           Next →
         </button>
+        {analysis && (
+          <button
+            onClick={() => exportAnalysisReport(analysis)}
+            className="ml-auto flex items-center gap-2 rounded-lg border-2 border-foreground bg-muted px-4 py-2 text-sm font-semibold transition hover:bg-muted/80"
+          >
+            <Download className="h-4 w-4" /> Export report
+          </button>
+        )}
       </div>
 
       {loading ? (

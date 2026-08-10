@@ -16,7 +16,7 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/app", replace: true });
+    if (!loading && user) navigate({ to: "/dashboard", replace: true });
   }, [user, loading, navigate]);
 
   const signIn = async () => {
@@ -31,7 +31,7 @@ function LoginPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/app", replace: true });
+    navigate({ to: "/dashboard", replace: true });
   };
 
   return (

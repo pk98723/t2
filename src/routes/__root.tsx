@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { AuthProvider } from "@/hooks/use-auth";
+import { ThemeProvider, useTheme } from "@/hooks/use-theme";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
@@ -101,6 +102,19 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var t = localStorage.getItem("t2-theme");
+                  if (!t) { t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+                  if (t === "dark") document.documentElement.classList.add("dark");
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         {children}
@@ -110,15 +124,22 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ToasterWithTheme() {
+  const { theme } = useTheme();
+  return <Toaster position="top-center" richColors theme={theme} />;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <Toaster position="top-center" richColors />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Outlet />
+          <ToasterWithTheme />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

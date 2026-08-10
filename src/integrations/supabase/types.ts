@@ -116,6 +116,165 @@ export type Database = {
         }
         Relationships: []
       }
+      savings_goals: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          target_amount: number
+          current_amount: number
+          target_date: string | null
+          category: string | null
+          color: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          target_amount: number
+          current_amount?: number
+          target_date?: string | null
+          category?: string | null
+          color?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          target_amount?: number
+          current_amount?: number
+          target_date?: string | null
+          category?: string | null
+          color?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          color: string
+          icon: string
+          monthly_budget: number
+          is_essential: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          color?: string
+          icon?: string
+          monthly_budget?: number
+          is_essential?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          color?: string
+          icon?: string
+          monthly_budget?: number
+          is_essential?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      monthly_budgets: {
+        Row: {
+          id: string
+          user_id: string
+          year: number
+          month: number
+          total_budget: number
+          discretionary_limit: number
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          year: number
+          month: number
+          total_budget?: number
+          discretionary_limit?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          year?: number
+          month?: number
+          total_budget?: number
+          discretionary_limit?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          id: string
+          user_id: string
+          category_id: string
+          amount: number
+          description: string | null
+          notes: string | null
+          transaction_date: string
+          is_recurring: boolean
+          recurring_interval: string | null
+          tags: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category_id: string
+          amount: number
+          description?: string | null
+          notes?: string | null
+          transaction_date: string
+          is_recurring?: boolean
+          recurring_interval?: string | null
+          tags?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category_id?: string
+          amount?: number
+          description?: string | null
+          notes?: string | null
+          transaction_date?: string
+          is_recurring?: boolean
+          recurring_interval?: string | null
+          tags?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

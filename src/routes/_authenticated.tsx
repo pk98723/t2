@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/hooks/use-theme";
+import { Sun, Moon } from "lucide-react";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -8,6 +10,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthLayout() {
   const { user, loading, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +37,13 @@ function AuthLayout() {
           </Link>
           <nav className="flex items-center gap-1 sm:gap-2 flex-wrap">
             <Link
+              to="/dashboard"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Dashboard
+            </Link>
+            <Link
               to="/app"
               activeProps={{ className: "bg-foreground text-background" }}
               className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
@@ -46,6 +56,13 @@ function AuthLayout() {
               className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
             >
               Expenses
+            </Link>
+            <Link
+              to="/bills"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Bills
             </Link>
             <Link
               to="/insights"
@@ -62,6 +79,13 @@ function AuthLayout() {
               Categories
             </Link>
             <Link
+              to="/goals"
+              activeProps={{ className: "bg-foreground text-background" }}
+              className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
+            >
+              Goals
+            </Link>
+            <Link
               to="/history"
               activeProps={{ className: "bg-foreground text-background" }}
               className="rounded-lg border-2 border-foreground px-3 py-1.5 text-sm font-semibold transition hover:bg-muted"
@@ -75,6 +99,13 @@ function AuthLayout() {
             >
               Profile
             </Link>
+            <button
+              onClick={toggleTheme}
+              className="rounded-lg border-2 border-foreground bg-background p-1.5 transition hover:bg-muted"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <button
               onClick={async () => {
                 await signOut();
