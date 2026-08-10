@@ -30,7 +30,10 @@
               "scheme": "t2app"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -41,8 +44,10 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
-      }
-    }
+        "projectId": "46176733-f239-4c16-8432-64d50b0bf6d2"
+      },
+      "router": {}
+    },
+    "owner": "pavan98723s-team"
   }
 }
