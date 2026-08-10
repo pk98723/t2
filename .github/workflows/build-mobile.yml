@@ -1,0 +1,93 @@
+name: Build Mobile APK
+
+on:
+  # Manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+
+  # Auto-build on pushes to main that touch mobile/shared
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/shared/**"
+      - "supabase/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Android ${{ inputs.profile || 'preview' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          npm_config_ignore_scripts: true
+
+      - name: Set Supabase environment variables
+        run: |
+          echo "EXPO_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
+          echo "EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> $GITHUB_ENV
+
+      - name: Build Android ${{ inputs.profile || 'preview' }}
+        id: build
+        run: |
+          PROFILE="${{ inputs.profile || 'preview' }}"
+          eas build \
+            --platform android \
+            --profile "$PROFILE" \
+            --non-interactive \
+            --no-wait \
+            --output "./build-output.json"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: t2-android-${{ inputs.profile || 'preview' }}
+          path: apps/mobile/build-output.json
+          retention-days: 7
+
+  notify:
+    name: Notify on completion
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always()
+    steps:
+      - name: Get build status
+        run: |
+          if [ "${{ needs.build.result }}" = "success" ]; then
+            echo "✅ Build completed successfully!"
+          else
+            echo "❌ Build failed: ${{ needs.build.result }}"
+          fi
