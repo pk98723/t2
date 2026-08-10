@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { analyze, fmt, type AnalysisInput, type Analysis } from "@/lib/finance";
 import { ArrowRight, Wallet, AlertTriangle, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import * as Recharts from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
 
 const defaultInput: AnalysisInput = {
   salary: 80000,
@@ -10,6 +12,8 @@ const defaultInput: AnalysisInput = {
   price: 60000,
   fundingMode: "savings",
   emiMonths: 12,
+  emis: [],
+  investments: [],
 };
 
 export function PurchaseAnalyzer() {
@@ -54,6 +58,34 @@ export function PurchaseAnalyzerForm({
     setInput((s) => ({ ...s, [k]: numValue }) as AnalysisInput);
   };
 
+  // EMI list handlers
+  const addEmiRow = () => setInput((s) => ({ ...s, emis: [...(s.emis ?? []), { name: "", monthlyAmount: 0 }] } as AnalysisInput));
+  const updateEmiRow = (idx: number, field: "name" | "monthlyAmount", value: string | number) =>
+    setInput((s) => {
+      const emis = [...(s.emis ?? [])];
+      const row = { ...(emis[idx] || { name: "", monthlyAmount: 0 }) };
+      if (field === "name") row.name = String(value);
+      else row.monthlyAmount = Number(value);
+      emis[idx] = row;
+      return { ...s, emis } as AnalysisInput;
+    });
+  const removeEmiRow = (idx: number) => setInput((s) => ({ ...s, emis: (s.emis ?? []).filter((_, i) => i !== idx) } as AnalysisInput));
+
+  // Investment list handlers
+  const addInvestmentRow = () =>
+    setInput((s) => ({ ...s, investments: [...(s.investments ?? []), { type: "SIP", monthlySIP: 0, totalValue: 0 }] } as AnalysisInput));
+  const updateInvestmentRow = (idx: number, field: "type" | "monthlySIP" | "totalValue", value: string | number) =>
+    setInput((s) => {
+      const investments = [...(s.investments ?? [])];
+      const row = { ...(investments[idx] || { type: "SIP", monthlySIP: 0, totalValue: 0 }) } as any;
+      if (field === "type") row.type = String(value);
+      else if (field === "monthlySIP") row.monthlySIP = Number(value);
+      else row.totalValue = Number(value);
+      investments[idx] = row;
+      return { ...s, investments } as AnalysisInput;
+    });
+  const removeInvestmentRow = (idx: number) => setInput((s) => ({ ...s, investments: (s.investments ?? []).filter((_, i) => i !== idx) } as AnalysisInput));
+
   return (
     <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
       <div className="rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal sm:p-8">
@@ -72,6 +104,94 @@ export function PurchaseAnalyzerForm({
           <Field label="Monthly expenses" value={input.expenses} onChange={(v) => update("expenses", v)} />
           <Field label="Existing EMIs" value={input.emi} onChange={(v) => update("emi", v)} />
           <Field label="Total savings" value={input.savings} onChange={(v) => update("savings", v)} />
+        </div>
+
+        {/* Detailed EMIs table */}
+        <div className="mt-6">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="font-mono text-xs font-bold tracking-widest text-muted-foreground">Detailed EMIs</div>
+            <button
+              onClick={addEmiRow}
+              className="ml-2 rounded-md border-2 border-foreground bg-card px-3 py-1 text-sm font-semibold"
+            >
+              + Add EMI
+            </button>
+          </div>
+          <div className="space-y-2">
+            {(input.emis ?? []).map((e, idx) => (
+              <div key={idx} className="grid grid-cols-12 gap-2 rounded-lg border border-background/20 bg-background/5 p-2">
+                <input
+                  placeholder="Bank / Loan"
+                  value={e.name}
+                  onChange={(ev) => updateEmiRow(idx, "name", ev.target.value)}
+                  className="col-span-5 rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+                />
+                <input
+                  type="number"
+                  placeholder="Monthly amount"
+                  value={e.monthlyAmount || ''}
+                  onChange={(ev) => updateEmiRow(idx, "monthlyAmount", Number(ev.target.value))}
+                  className="col-span-5 rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+                />
+                <button onClick={() => removeEmiRow(idx)} className="col-span-2 rounded border-2 border-foreground bg-destructive px-2 text-sm text-destructive-foreground">
+                  Remove
+                </button>
+              </div>
+            ))}
+            {(input.emis ?? []).length === 0 && (
+              <div className="text-sm text-muted-foreground">No detailed EMIs added — use the quick "Existing EMIs" field above as a fallback.</div>
+            )}
+          </div>
+        </div>
+
+        {/* Investments table */}
+        <div className="mt-6">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="font-mono text-xs font-bold tracking-widest text-muted-foreground">Investments</div>
+            <button
+              onClick={addInvestmentRow}
+              className="ml-2 rounded-md border-2 border-foreground bg-card px-3 py-1 text-sm font-semibold"
+            >
+              + Add Investment
+            </button>
+          </div>
+          <div className="space-y-2">
+            {(input.investments ?? []).map((it, idx) => (
+              <div key={idx} className="grid grid-cols-12 gap-2 rounded-lg border border-background/20 bg-background/5 p-2">
+                <select
+                  value={it.type}
+                  onChange={(ev) => updateInvestmentRow(idx, "type", ev.target.value)}
+                  className="col-span-4 rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+                >
+                  <option>SIP</option>
+                  <option>Stocks</option>
+                  <option>Gold</option>
+                  <option>Bonds</option>
+                  <option>Other</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="Monthly SIP"
+                  value={it.monthlySIP || ''}
+                  onChange={(ev) => updateInvestmentRow(idx, "monthlySIP", Number(ev.target.value))}
+                  className="col-span-4 rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+                />
+                <input
+                  type="number"
+                  placeholder="Total value"
+                  value={it.totalValue || ''}
+                  onChange={(ev) => updateInvestmentRow(idx, "totalValue", Number(ev.target.value))}
+                  className="col-span-3 rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+                />
+                <button onClick={() => removeInvestmentRow(idx)} className="col-span-1 rounded border-2 border-foreground bg-destructive px-2 text-sm text-destructive-foreground">
+                  Remove
+                </button>
+              </div>
+            ))}
+            {(input.investments ?? []).length === 0 && (
+              <div className="text-sm text-muted-foreground">No investments added. Add SIPs or asset totals to improve the analysis.</div>
+            )}
+          </div>
         </div>
 
         <div className="my-6 h-px bg-foreground/15" />
@@ -124,12 +244,114 @@ export function PurchaseAnalyzerForm({
       </div>
 
       <div className="space-y-4">
+        <GraphAndOptions input={input} />
         <ResultPanel result={result} price={lastPrice ?? input.price} />
         {afterResult}
       </div>
     </div>
   );
 }
+
+function GraphAndOptions({ input }: { input: AnalysisInput }) {
+  const [showGraph, setShowGraph] = useState(false);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const years = Array.from({ length: 2048 - 1960 + 1 }, (_, i) => 1960 + i);
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+
+  // derive totals
+  const existingEmiTotal = input.emis && input.emis.length ? input.emis.reduce((s, e) => s + (e.monthlyAmount || 0), 0) : input.emi || 0;
+  const totalMonthlySIP = input.investments && input.investments.length ? input.investments.reduce((s, it) => s + (it.monthlySIP || 0), 0) : 0;
+  const newEmi = input.fundingMode === "emi" ? (input.newEmi ?? (input.price / (input.emiMonths ?? 12))) : 0;
+  const salary = input.salary || 0;
+  const expenses = input.expenses || 0;
+
+  const leftover = Math.max(salary - expenses - existingEmiTotal - totalMonthlySIP - newEmi, 0);
+
+  const chartData: { name: string; value: number; key: string }[] = [];
+  if (expenses > 0) chartData.push({ name: "Expenses", value: expenses, key: "expenses" });
+  if (existingEmiTotal > 0) chartData.push({ name: "Existing EMIs", value: existingEmiTotal, key: "existingEmi" });
+  (input.investments ?? []).forEach((it, i) => {
+    if ((it.monthlySIP || 0) > 0) chartData.push({ name: `${it.type || "Inv"} ${i + 1}`, value: it.monthlySIP || 0, key: `inv${i}` });
+  });
+  if (newEmi > 0) chartData.push({ name: "New EMI", value: newEmi, key: "newEmi" });
+  if (leftover > 0) chartData.push({ name: "Leftover savings", value: leftover, key: "leftover" });
+
+  const colors = ["#4F46E5", "#06B6D4", "#F97316", "#10B981", "#EF4444", "#8B5CF6", "#F59E0B"];
+
+  const total = chartData.reduce((s, d) => s + d.value, 0) || 1;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          <div className="font-mono text-xs font-bold tracking-widest text-muted-foreground">Visualization</div>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+          >
+            {monthNames.map((m, i) => (
+              <option key={m} value={i}>{m}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={showGraph} onChange={(e) => setShowGraph(e.target.checked)} />
+            Show graph
+          </label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="rounded border-2 border-foreground bg-card px-2 py-1 text-sm"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {showGraph && (
+        <div className="mt-3 rounded-2xl border-2 border-foreground bg-foreground p-3 text-background">
+          <ChartContainer
+            id="alloc"
+            config={Object.fromEntries(chartData.map((d, i) => [d.key, { color: colors[i % colors.length] }])) as any}
+            className="h-48"
+          >
+            <Recharts.ResponsiveContainer>
+              <Recharts.PieChart>
+<Recharts.Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ percent }) => `${Math.round(percent * 100)}%`}>
+                   {chartData.map((entry, index) => (
+                     <Recharts.Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                   ))}
+                 </Recharts.Pie>
+                 <Recharts.Tooltip formatter={(val: number) => `${Math.round(val).toLocaleString()}`} />
+                 <Recharts.Legend />
+               </Recharts.PieChart>
+             </Recharts.ResponsiveContainer>
+           </ChartContainer>
+
+           {/* Percent breakdown removed as requested */}
+         </div>
+       )}
+     </div>
+   );
+ }
 
 function Field({
   label,

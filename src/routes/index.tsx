@@ -96,32 +96,6 @@ function Index() {
               </div>
             </div>
 
-            {/* Hero card */}
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-3xl bg-primary/60 blur-2xl" />
-              <div className="relative rounded-2xl border-2 border-foreground bg-foreground p-6 text-background shadow-brutal-lg">
-                <div className="font-mono text-xs font-bold tracking-widest text-primary">SCENARIO</div>
-                <div className="mt-1 font-display text-2xl font-bold">iPhone 16 Pro · ₹1,34,900</div>
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-background/20 bg-background/5 p-3">
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-background/60">EMI load</div>
-                    <div className="font-display text-2xl font-bold text-destructive">41%</div>
-                  </div>
-                  <div className="rounded-lg border border-background/20 bg-background/5 p-3">
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-background/60">Cushion</div>
-                    <div className="font-display text-2xl font-bold text-destructive">1.8mo</div>
-                  </div>
-                </div>
-                <div className="mt-5 rounded-lg border-2 border-destructive bg-destructive p-3 text-destructive-foreground">
-                  <div className="font-display text-lg font-bold leading-tight">
-                    Don't buy this. Not yet.
-                  </div>
-                  <div className="mt-1 text-xs opacity-90">
-                    Try the iPhone 15. Same joy. ₹40k less hurt.
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

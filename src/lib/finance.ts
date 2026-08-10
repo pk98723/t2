@@ -10,6 +10,9 @@ export interface AnalysisInput extends Profile {
   fundingMode: "savings" | "emi";
   newEmi?: number;
   emiMonths?: number;
+  // optional detailed lists
+  emis?: { name?: string; monthlyAmount: number }[];
+  investments?: { type?: string; monthlySIP?: number; totalValue?: number }[];
 }
 
 export type Verdict = "go" | "caution" | "stop";
@@ -27,20 +30,30 @@ export interface Analysis {
 
 export function analyze(input: AnalysisInput): Analysis {
   const { salary, expenses, emi, savings, price, fundingMode } = input;
-  const monthlySaving = Math.max(salary - expenses - emi, 0);
 
-  const emiRatioBefore = salary > 0 ? (emi / salary) * 100 : 0;
-  const emergencyMonthsBefore = expenses > 0 ? savings / expenses : 0;
+  // Sum detailed EMIs if provided, otherwise fall back to `emi` field
+  const existingEmiTotal = input.emis && input.emis.length ? input.emis.reduce((s, e) => s + (e.monthlyAmount || 0), 0) : emi || 0;
 
-  let savingsAfter = savings;
-  let emiAfter = emi;
+  // Sum investment monthly SIPs and total values
+  const totalMonthlySIP = input.investments && input.investments.length ? input.investments.reduce((s, it) => s + (it.monthlySIP || 0), 0) : 0;
+  const totalInvestmentsValue = input.investments && input.investments.length ? input.investments.reduce((s, it) => s + (it.totalValue || 0), 0) : 0;
+
+  // Monthly saving considers salary - expenses - existing EMIs - monthly SIPs
+  const monthlySaving = Math.max(salary - expenses - existingEmiTotal - totalMonthlySIP, 0);
+
+  const emiRatioBefore = salary > 0 ? (existingEmiTotal / salary) * 100 : 0;
+  // Consider investments total as part of liquid savings for emergency cushion (best-effort)
+  const emergencyMonthsBefore = expenses > 0 ? (savings + totalInvestmentsValue) / expenses : 0;
+
+  let savingsAfter = savings + totalInvestmentsValue;
+  let emiAfter = existingEmiTotal;
 
   if (fundingMode === "savings") {
-    savingsAfter = savings - price;
+    savingsAfter = savingsAfter - price;
   } else {
     const months = input.emiMonths ?? 12;
     const addEmi = input.newEmi ?? price / months;
-    emiAfter = emi + addEmi;
+    emiAfter = emiAfter + addEmi;
   }
 
   const emiRatioAfter = salary > 0 ? (emiAfter / salary) * 100 : 0;
