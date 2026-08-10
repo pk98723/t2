@@ -1,0 +1,12 @@
+Place your app icon PNG files here before building for production:
+
+- icon.png            — 1024×1024 (Play Store listing icon)
+- adaptive-foreground.png — 1024×1024 (Android adaptive icon, transparent background)
+- splash-icon.png     — 1284×2778 (splash screen artwork)
+
+You can generate these with:
+- https://icon.kitchen (free, generates all sizes)
+- https://www.canva.com (for quick designs)
+- Or hire a designer
+
+After placing the files, run: npx expo optimize
