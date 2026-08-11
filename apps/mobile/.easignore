@@ -1,0 +1,5 @@
+*
+!apps/mobile/**
+!packages/shared/**
+!package.json
+!tsconfig.json
