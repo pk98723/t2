@@ -1,9 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
     "jsx": "react-jsx",
+    "module": "ESNext",
     "lib": ["ES2022"],
     "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
     "paths": {
       "@/*": ["./src/*"],
       "@t2/shared": ["../../packages/shared/src/index.ts"],
