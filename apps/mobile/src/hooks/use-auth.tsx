@@ -57,10 +57,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (result.type === "success" && result.url) {
-        // The browser redirected back — pass the URL to Supabase
+        // Extract the auth code and optional flow ID from the redirect URL.
+        // In supabase-js v2+, exchangeCodeForSession accepts the auth code
+        // directly (PKCE), not the full URL.
+        const params = new URL(result.url).searchParams;
+        const authCode = params.get("code");
+        const flowId = params.get("sb_flow_id");
+
+        if (!authCode) return { error: new Error("No auth code in redirect") };
+
         const { error: sessionError } =
           await supabase.auth.exchangeCodeForSession(
-            result.url
+            authCode,
+            flowId ? { flowId } : undefined
           );
         if (sessionError) return { error: sessionError };
       }
